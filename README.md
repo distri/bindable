@@ -1,4 +1,0 @@
-bindable
-========
-
-Event binding
