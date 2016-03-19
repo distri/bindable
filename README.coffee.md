@@ -1,8 +1,6 @@
 Bindable
 ========
 
-    Core = require "core"
-
 Add event binding to objects.
 
 >     bindable = Bindable()
@@ -15,10 +13,8 @@ Use as a mixin.
 
 >    self.include Bindable
 
-    module.exports = (I={}, self=Core(I)) ->
+    module.exports = (I={}, self={}) ->
       eventCallbacks = {}
-
-      self.extend
 
 Adds a function as an event listener.
 
@@ -33,20 +29,20 @@ custom drawing system you could unbind `".Drawable"` events and add your own.
 
 >     yourObject.on ""
 
-        on: (namespacedEvent, callback) ->
-          [event, namespace] = namespacedEvent.split(".")
+      self.on = (namespacedEvent, callback) ->
+        [event, namespace] = namespacedEvent.split(".")
 
-          # HACK: Here we annotate the callback function with namespace metadata
-          # This will probably lead to some strange edge cases, but should work fine
-          # for simple cases.
-          if namespace
-            callback.__PIXIE ||= {}
-            callback.__PIXIE[namespace] = true
+        # HACK: Here we annotate the callback function with namespace metadata
+        # This will probably lead to some strange edge cases, but should work fine
+        # for simple cases.
+        if namespace
+          callback.__PIXIE ||= {}
+          callback.__PIXIE[namespace] = true
 
-          eventCallbacks[event] ||= []
-          eventCallbacks[event].push(callback)
+        eventCallbacks[event] ||= []
+        eventCallbacks[event].push(callback)
 
-          return self
+        return self
 
 Removes a specific event listener, or all event listeners if
 no specific listener is given.
@@ -64,31 +60,31 @@ Remove all handlers from the `".Drawable" namespace`
 
 >     yourObject.off ".Drawable"
 
-        off: (namespacedEvent, callback) ->
-          [event, namespace] = namespacedEvent.split(".")
+      self.off = (namespacedEvent, callback) ->
+        [event, namespace] = namespacedEvent.split(".")
 
-          if event
-            eventCallbacks[event] ||= []
+        if event
+          eventCallbacks[event] ||= []
 
-            if namespace
-              # Select only the callbacks that do not have this namespace metadata
-              eventCallbacks[event] = eventCallbacks.filter (callback) ->
-                !callback.__PIXIE?[namespace]?
-
-            else
-              if callback
-                remove eventCallbacks[event], callback
-              else
-                eventCallbacks[event] = []
-          else if namespace
-            # No event given
+          if namespace
             # Select only the callbacks that do not have this namespace metadata
-            # for any events bound
-            for key, callbacks of eventCallbacks
-              eventCallbacks[key] = callbacks.filter (callback) ->
-                !callback.__PIXIE?[namespace]?
+            eventCallbacks[event] = eventCallbacks.filter (callback) ->
+              !callback.__PIXIE?[namespace]?
 
-          return self
+          else
+            if callback
+              remove eventCallbacks[event], callback
+            else
+              eventCallbacks[event] = []
+        else if namespace
+          # No event given
+          # Select only the callbacks that do not have this namespace metadata
+          # for any events bound
+          for key, callbacks of eventCallbacks
+            eventCallbacks[key] = callbacks.filter (callback) ->
+              !callback.__PIXIE?[namespace]?
+
+        return self
 
 Calls all listeners attached to the specified event.
 
@@ -99,20 +95,16 @@ Additional parameters can be passed to the handlers.
 
 >     yourObject.trigger "someEvent", "hello", "anotherParameter"
 
-        trigger: (event, parameters...) ->
-          callbacks = eventCallbacks[event]
+      self.trigger = (event, parameters...) ->
+        callbacks = eventCallbacks[event]
 
-          if callbacks
-            callbacks.forEach (callback) ->
-              callback.apply(self, parameters)
+        if callbacks
+          callbacks.forEach (callback) ->
+            callback.apply(self, parameters)
 
-          return self
+        return self
 
-Legacy method aliases.
-
-      self.extend
-        bind: self.on
-        unbind: self.off
+      return self
 
 Helpers
 -------

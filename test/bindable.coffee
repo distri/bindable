@@ -9,15 +9,15 @@ describe "Bindable", ->
   test "#bind and #trigger", ->
     o = Bindable()
 
-    o.bind("test", -> ok true)
+    o.on("test", -> ok true)
 
     o.trigger("test")
 
   test "Multiple bindings", ->
     o = Bindable()
 
-    o.bind("test", -> ok true)
-    o.bind("test", -> ok true)
+    o.on("test", -> ok true)
+    o.on("test", -> ok true)
 
     o.trigger("test")
 
@@ -27,7 +27,7 @@ describe "Bindable", ->
     param1 = "the message"
     param2 = 3
 
-    o.bind "test", (p1, p2) ->
+    o.on "test", (p1, p2) ->
       equal(p1, param1)
       equal(p2, param2)
 
@@ -39,33 +39,33 @@ describe "Bindable", ->
     callback = ->
       ok false
 
-    o.bind "test", callback
+    o.on "test", callback
     # Unbind specific event
-    o.unbind "test", callback
+    o.off "test", callback
     o.trigger "test"
 
-    o.bind "test", callback
+    o.on "test", callback
     # Unbind all events
-    o.unbind "test"
+    o.off "test"
     o.trigger "test"
 
   test "#trigger namespace", ->
     o = Bindable()
-    o.bind "test.TestNamespace", ->
+    o.on "test.TestNamespace", ->
       ok true
 
     o.trigger "test"
 
-    o.unbind ".TestNamespace"
+    o.off ".TestNamespace"
     o.trigger "test"
 
   test "#unbind namespaced", ->
     o = Bindable()
 
-    o.bind "test.TestNamespace", ->
+    o.on "test.TestNamespace", ->
       ok true
 
     o.trigger "test"
 
-    o.unbind ".TestNamespace", ->
+    o.off ".TestNamespace", ->
     o.trigger "test"

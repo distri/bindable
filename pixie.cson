@@ -1,4 +1,2 @@
 entryPoint: "README"
-version: "0.1.0"
-dependencies:
-  core: "distri/core:v0.6.0"
+version: "0.2.0"
