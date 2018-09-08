@@ -147,10 +147,11 @@ yourObject.trigger &quot;someCustomEvent&quot;</code></pre>
 
   </div>
   <div class="content"><pre><code class="lang-coffeescript">  self.<span class="function"><span class="title">trigger</span></span> = (event, parameters...) -&gt;
-    callbacks = eventCallbacks[event]
+    (eventCallbacks[<span class="string">"*"</span>] <span class="keyword">or</span> []).forEach (callback) -&gt;
+      callback.apply(self, [event].concat(parameters))
 
-    <span class="keyword">if</span> callbacks
-      callbacks.forEach (callback) -&gt;
+    <span class="keyword">unless</span> event <span class="keyword">is</span> <span class="string">"*"</span>
+      (eventCallbacks[event] <span class="keyword">or</span> []).forEach (callback) -&gt;
         callback.apply(self, parameters)
 
     <span class="keyword">return</span> self
