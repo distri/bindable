@@ -96,10 +96,11 @@ Additional parameters can be passed to the handlers.
 >     yourObject.trigger "someEvent", "hello", "anotherParameter"
 
       self.trigger = (event, parameters...) ->
-        callbacks = eventCallbacks[event]
+        (eventCallbacks["*"] or []).forEach (callback) ->
+          callback.apply(self, [event].concat(parameters))
 
-        if callbacks
-          callbacks.forEach (callback) ->
+        unless event is "*"
+          (eventCallbacks[event] or []).forEach (callback) ->
             callback.apply(self, parameters)
 
         return self
