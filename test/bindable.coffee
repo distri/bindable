@@ -72,11 +72,11 @@ describe "Bindable", ->
 
   test "* events", ->
     o = Bindable()
-    
+
     called = 0
     o.on "*", (event, rest...) ->
       called += 1
-      
+
       if called is 1
         assert.equal event, "edit"
         assert.equal rest[0], "cool"
